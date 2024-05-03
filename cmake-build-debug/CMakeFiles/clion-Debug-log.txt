@@ -1,4 +1,13 @@
-"D:\CLion 2023.2.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=D:/CLion 2023.2.2/bin/ninja/win/x64/ninja.exe" -G Ninja -S "C:\Users\Utilizador\OneDrive\Ambiente de Trabalho\DA_Project2" -B "C:\Users\Utilizador\OneDrive\Ambiente de Trabalho\DA_Project2\cmake-build-debug"
--- Configuring done (0.5s)
--- Generating done (0.0s)
--- Build files have been written to: C:/Users/Utilizador/OneDrive/Ambiente de Trabalho/DA_Project2/cmake-build-debug
+"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" -S D:\FEUP\2_ano\2_semestre\DA\Projeto2\DA_Project2 -B D:\FEUP\2_ano\2_semestre\DA\Projeto2\DA_Project2\cmake-build-debug
+CMake Deprecation Warning:
+  Support for "Extra Generators" like
+
+    CodeBlocks
+
+  is deprecated and will be removed from a future version of CMake.  IDEs may
+  use the cmake-file-api(7) to view CMake-generated project build trees.
+
+
+-- Configuring done (2.5s)
+-- Generating done (0.3s)
+-- Build files have been written to: D:/FEUP/2_ano/2_semestre/DA/Projeto2/DA_Project2/cmake-build-debug

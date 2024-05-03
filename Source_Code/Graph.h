@@ -10,6 +10,7 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
+#include "NodeInfo.h"
 
 template <class T>
 class Edge;
@@ -21,13 +22,13 @@ class Vertex {
 public:
     Vertex(T in);
     T getInfo() const;
-    std::unordered_set<Edge<T> *> getAdj() const;
+    std::vector<Edge<T> *> getAdj() const;
     bool isVisited() const;
     bool isProcessing() const;
     unsigned int getIndegree() const;
     double getDist() const;
     Edge<T> *getPath() const;
-    std::unordered_set<Edge<T> *> getIncoming() const;
+    std::vector<Edge<T> *> getIncoming() const;
 
     void setInfo(T info);
     void setVisited(bool visited);
@@ -39,10 +40,15 @@ public:
     bool removeEdge(T in);
     void removeOutgoingEdges();
     bool operator<(Vertex<T> & vertex) const;
+    bool operator==(Vertex<T> & vertex) const;
+
+    size_t hash() const{
+        return std::hash<T>()(info);
+    }
 
 protected:
     T info;                // info node
-    std::unordered_set<Edge<T> *> adj;  // outgoing edges
+    std::vector<Edge<T> *> adj;  // outgoing edges
 
     // auxiliary fields
     bool visited = false; // used by DFS, BFS, Prim ...
@@ -51,11 +57,25 @@ protected:
     double dist = 0;
     Edge<T> *path = nullptr;
 
-    std::unordered_set<Edge<T> *> incoming; // incoming edges
+    std::vector<Edge<T> *> incoming; // incoming edges
 
     int queueIndex = 0; 		// required by MutablePriorityQueue and UFDS
 
     void deleteEdge(Edge<T> *edge);
+};
+
+template <class T>
+struct HashVertex {
+    size_t operator()(const Vertex<T> *v) const {
+        return v->hash();
+    }
+};
+
+template <class T>
+struct EqualityVertex{
+    bool operator()(const Vertex<T>* n1, Vertex<T>* n2) const{
+        return *n1 == *n2;
+    }
 };
 
 /********************** Edge  ****************************/
@@ -76,6 +96,7 @@ public:
     void setReverse(Edge<T> *reverse);
     void setFlow(double flow);
     void setWeight(double weight);
+
 
 protected:
     Vertex<T> * dest; // destination vertex
@@ -129,7 +150,7 @@ public:
     bool dfsIsDAG(Vertex<T> *v) const;
     std::vector<T> topsort() const;
 protected:
-    std::unordered_set<Vertex<T> *> vertexSet;    // vertex set
+    std::unordered_set<Vertex<T> *, HashVertex<T>, EqualityVertex<T>> vertexSet;    // vertex set
 
     double ** distMatrix = nullptr;   // dist matrix for Floyd-Warshall
     int **pathMatrix = nullptr;   // path matrix for Floyd-Warshall
@@ -214,6 +235,11 @@ bool Vertex<T>::operator<(Vertex<T> & vertex) const {
     return this->dist < vertex.dist;
 }
 
+template <class T>
+bool Vertex<T>::operator==(Vertex<T> & vertex) const{
+    return this->info == vertex.info;
+}
+
 /**
  * Gets the vertex's information.
  * Complexity: O(1)
@@ -232,7 +258,7 @@ T Vertex<T>::getInfo() const {
  * @return Vertex's outgoing edges list.
  */
 template <class T>
-std::unordered_set<Edge<T> *> Vertex<T>::getAdj() const {
+std::vector<Edge<T> *> Vertex<T>::getAdj() const {
     return this->adj;
 }
 
@@ -298,7 +324,7 @@ Edge<T> *Vertex<T>::getPath() const {
  * @return Vertex's incoming edge list.
  */
 template <class T>
-std::unordered_set<Edge<T> *> Vertex<T>::getIncoming() const {
+std::vector<Edge<T> *> Vertex<T>::getIncoming() const {
     return this->incoming;
 }
 
@@ -536,10 +562,12 @@ std::unordered_set<Vertex<T> *> Graph<T>::getVertexSet() const {
  */
 template <class T>
 Vertex<T> * Graph<T>::findVertex(const T &in) const {
-    for (auto v : vertexSet)
-        if (v->getInfo() == in)
-            return v;
-    return nullptr;
+    Vertex<T> v(in);
+    Vertex<T>* vPointer = &v;
+    auto it = vertexSet.find(vPointer);
+    if(it == nullptr)
+        return nullptr;
+    return *it;
 }
 
 /**
@@ -567,7 +595,7 @@ template <class T>
 bool Graph<T>::addVertex(const T &in) {
     if (findVertex(in) != nullptr)
         return false;
-    vertexSet.push_back(new Vertex<T>(in));
+    vertexSet.insert(new Vertex<T>(in));
     return true;
 }
 
@@ -580,19 +608,17 @@ bool Graph<T>::addVertex(const T &in) {
  */
 template <class T>
 bool Graph<T>::removeVertex(const T &in) {
-    for (auto it = vertexSet.begin(); it != vertexSet.end(); it++) {
-        if ((*it)->getInfo() == in) {
-            auto v = *it;
+            auto v = findVertex(in);
+            if(v == nullptr){
+                return false;
+            }
             v->removeOutgoingEdges();
             for (auto u : vertexSet) {
                 u->removeEdge(v->getInfo());
             }
-            vertexSet.erase(it);
+            vertexSet.erase(v);
             delete v;
             return true;
-        }
-    }
-    return false;
 }
 
 /**

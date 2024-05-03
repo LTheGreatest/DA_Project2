@@ -8,13 +8,16 @@
 #include <iostream>
 
 class NodeInfo {
-    NodeInfo(int id_, std::string label_ = "", double longitude_ = 0, double latitude_ = 0) : id(id_),label(label_),longitude(longitude_),latitude(latitude_) {}
+    public:
+        NodeInfo(int id_, std::string label_ = "", double longitude_ = 0, double latitude_ = 0) : id(id_),label(label_),longitude(longitude_),latitude(latitude_) {}
 
-    //getters
-    int getId() const;
-    std::string getLabel() const;
-    double getLatitude() const;
-    double getLongitude() const;
+        //getters
+        int getId() const;
+        std::string getLabel() const;
+        double getLatitude() const;
+        double getLongitude() const;
+
+        bool operator==(const NodeInfo& info) const;
 
     private:
         int id;
@@ -23,17 +26,26 @@ class NodeInfo {
         double latitude;
 };
 
-int NodeInfo::getId() const {
-    return id;
-}
-std::string NodeInfo::getLabel() const {
-    return label;
-}
-double NodeInfo::getLatitude() const {
-    return latitude;
-}
-double NodeInfo::getLongitude() const {
-    return longitude;
+namespace  std
+{
+    template<>
+    struct hash<NodeInfo>
+    {
+        size_t operator()(const NodeInfo& node) const {
+            size_t idHash = hash<int>()(node.getId());
+            size_t labelHash = hash<string>()(node.getLabel());
+            size_t latitudeHash = hash<double>()(node.getLatitude());
+            size_t longitudeHash = hash<double>()(node.getLongitude());
+            return (idHash ^ labelHash ^ latitudeHash ^ longitudeHash) >> 1;
+        }
+
+        bool operator()(const NodeInfo& node1, const NodeInfo& node2) const{
+            return node1.getId() == node2.getId()
+            && node1.getLabel() == node2.getLabel()
+            && node1.getLatitude() == node2.getLatitude()
+            && node1.getLongitude() == node2.getLongitude();
+        }
+    };
 }
 
 
