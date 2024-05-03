@@ -4,14 +4,16 @@
 
 #include "DataSelection.h"
 #include <iostream>
-
+#include "parse.h"
+#include <fstream>
+#include <sstream>
+using namespace std;
 /**
  * Used to select the path to the desired dataset.
  * Complexity: O(1)
  * @param dataset Which dataset we want (Small/Medium/Big)
  * @param filepath Path to the file
  */
-
 void selectDataSet(DataSetSelection dataset, std::string *filepath) {
     switch (dataset) {
         case DataSetSelection::SMALL:
@@ -40,44 +42,44 @@ void selectSmallGraph(int n, std::string *filepath){
     }
 }
 
-void selectMediumGraph(int n, std::string *filepath){
+int selectMediumGraph(int n, std::string *filepath){
     switch (n) {
         case 1:
             *filepath += "/edges_25.csv";
-            break;
+            return 25;
         case 2:
             *filepath += "/edges_50.csv";
-            break;
+            return 50;
         case 3:
             *filepath += "/edges_75.csv";
-            break;
+            return 75;
         case 4:
             *filepath += "/edges_100.csv";
-            break;
+            return 100;
         case 5:
             *filepath += "/edges_200.csv";
-            break;
+            return 200;
         case 6:
             *filepath += "/edges_300.csv";
-            break;
+            return 300;
         case 7:
             *filepath += "/edges_400.csv";
-            break;
+            return 400;
         case 8:
             *filepath += "/edges_500.csv";
-            break;
+            return 500;
         case 9:
             *filepath += "/edges_600.csv";
-            break;
+            return 600;
         case 10:
             *filepath += "/edges_700.csv";
-            break;
+            return 700;
         case 11:
             *filepath += "/edges_800.csv";
-            break;
+            return 800;
         case 12:
             *filepath += "/edges_900.csv";
-            break;
+            return 900;
     }
 }
 
@@ -93,6 +95,87 @@ void selectBigGraph(int n, std::string *filepath) {
             *filepath += "/graph3";
             break;
     }
+}
+
+void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph, int n){
+    int numbOfNodes = 10000; //reads all the nodes
+    string filepath;
+    switch (dataSetSelection) {
+        case DataSetSelection::SMALL :
+            //Use the appropriated function for the small dataset
+            break;
+        case DataSetSelection::MEDIUM :
+            selectDataSet(DataSetSelection::MEDIUM, &filepath);
+            numbOfNodes =  selectMediumGraph(n, &filepath);
+            filepath = "../dataset/Extra_Fully_Connected_Graphs/nodes.csv";
+            break;
+        case DataSetSelection::BIG:
+            selectDataSet(DataSetSelection::BIG, &filepath);
+            filepath += "/nodes.csv";
+    }
+
+    ifstream file(filepath);
+    if(!file.is_open()){
+        cerr << "Error: Unable to open the file." << '\n';
+    }
+
+    string line;
+
+    getline(file,line); //header line
+
+    int id;
+    double latitude, longitude;
+
+    while(getline(file,line) || numbOfNodes == 0) {
+        numbOfNodes--;
+
+        //get id
+        size_t it = line.find_first_of(',');
+        id = stoi(line.substr(0,it));
+        line = line.substr(it + 1);
+
+        //get longitude
+        it = line.find_first_of(',');
+        longitude = stod(line.substr(0,it));
+        line = line.substr(it + 1);
+
+        //get latitude
+        latitude = stod(line);
+
+        //create the new node info
+        NodeInfo info {id, "",longitude, latitude};
+
+        //insert the new node in the hashmap and into the graph
+        idToInfo.emplace(id,info);
+        graph.addVertex(info);
+    }
+
+
+}
+
+void readEdges(DataSetSelection dataSetSelection, Graph<NodeInfo> &graph, int n){
+    string filepath;
+    switch (dataSetSelection) {
+        case DataSetSelection::SMALL :
+            //Use the appropriated function for the small dataset
+            break;
+        case DataSetSelection::MEDIUM :
+            selectDataSet(DataSetSelection::MEDIUM, &filepath);
+            selectMediumGraph(n, &filepath);
+            break;
+        case DataSetSelection::BIG:
+            selectDataSet(DataSetSelection::BIG, &filepath);
+            filepath += "/edges.csv";
+    }
+
+    ifstream file(filepath);
+    if(!file.is_open()){
+        cerr << "Error: Unable to open the file." << '\n';
+    }
+
+    string line;
+
+    getline(file,line); //header line
 }
 
 

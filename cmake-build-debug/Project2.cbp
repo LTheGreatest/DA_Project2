@@ -400,6 +400,9 @@
 		<Unit filename="D:/FEUP/2_ano/2_semestre/DA/Projeto2/DA_Project2/Source_Code/parse.cpp">
 			<Option target="Main"/>
 		</Unit>
+		<Unit filename="D:/FEUP/2_ano/2_semestre/DA/Projeto2/DA_Project2/Source_Code/parse.h">
+			<Option target="Main"/>
+		</Unit>
 		<Unit filename="D:/FEUP/2_ano/2_semestre/DA/Projeto2/DA_Project2/lib/googletest/googlemock/src/gmock-all.cc">
 			<Option target="gmock"/>
 		</Unit>

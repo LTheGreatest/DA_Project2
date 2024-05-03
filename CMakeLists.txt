@@ -26,6 +26,7 @@ set(SOURCE_FILES
         Source_Code/NodeInfo.h
         Source_Code/NodeInfo.cpp
         Source_Code/main.cpp
+        Source_Code/parse.h
 
 )
 

@@ -3,14 +3,12 @@
 //
 #include <iostream>
 #include "graph.h"
+#include "parse.h"
 
 int main(){
     Graph<NodeInfo> g;
-    NodeInfo node(1);
-    NodeInfo node2(2);
-    g.addVertex(node);
-    g.addVertex(node2);
-    Vertex<NodeInfo> *v = g.findVertex(node2);
-    std::cout << v->getInfo().getId();
+    int n = 1;
+    std::unordered_map<int, NodeInfo> map;
+    readNodes(DataSetSelection::MEDIUM, map, g,n);
     return 0;
 }

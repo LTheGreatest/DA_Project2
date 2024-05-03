@@ -556,7 +556,7 @@ std::unordered_set<Vertex<T> *> Graph<T>::getVertexSet() const {
 
 /**
  * Auxiliary function to find a vertex with a given content.
- * Complexity: O(v) where v is the number of vertexes
+ * Complexity: O(1) where v is the number of vertexes
  * @param in Info of the vertex to find.
  * @return Pointer to the vertex found or nullptr if the vertex doesn't exists.
  */
@@ -586,7 +586,7 @@ int Graph<T>::findVertexIdx(const T &in) const {
 
 /**
  *  Adds a vertex with a given content or info (in) to a graph (this).
- *  Complexity: O(v) where v is the number of vertexes in the graph.
+ *  Complexity: O(1).
  *  @param in Info of the vertex.
  *  @param type Type of hte new vertex.
  *  @return true if successful, and false if a vertex with that content already exists.
@@ -602,29 +602,29 @@ bool Graph<T>::addVertex(const T &in) {
 /**
  *  Removes a vertex with a given content (in) from a graph (this), and
  *  all outgoing and incoming edges.
- *  Complexity: O(v^2 + E^2) = O(v^2) where v is the number of vertexes and E is the number of edges.
+ *  Complexity: O(VE^2) where v is the number of vertexes and E is the number of edges.
  *  @param in Info of the vertex to remove.
  *  @return true if successful, and false if such vertex does not exist.
  */
 template <class T>
 bool Graph<T>::removeVertex(const T &in) {
-            auto v = findVertex(in);
-            if(v == nullptr){
-                return false;
-            }
-            v->removeOutgoingEdges();
-            for (auto u : vertexSet) {
-                u->removeEdge(v->getInfo());
-            }
-            vertexSet.erase(v);
-            delete v;
-            return true;
+    auto v = findVertex(in);
+    if(v == nullptr){
+        return false;
+    }
+    v->removeOutgoingEdges();
+    for (auto u : vertexSet) {
+        u->removeEdge(v->getInfo());
+    }
+    vertexSet.erase(v);
+    delete v;
+    return true;
 }
 
 /**
  * Adds an edge to a graph (this), given the contents of the source and
  * destination vertices and the edge weight (w).
- * Complexity: O(v) where v is the number of vertexes in the graph.
+ * Complexity: O(1) where v is the number of vertexes in the graph.
  * @param dest info of the vertex that is the destination of the edge
  * @param sourc info of the vertex that is the source of the edge
  * @param w weight of the new edge.
@@ -659,7 +659,7 @@ bool Graph<T>::removeEdge(const T &sourc, const T &dest) {
 
 /**
  * Adds a bidirectional edge.
- * Complexity: O(V) where v is the number of vertexes.
+ * Complexity: O(1) where v is the number of vertexes.
  * @tparam T Type of class
  * @param sourc Source of the edge
  * @param dest Destination of the edge
