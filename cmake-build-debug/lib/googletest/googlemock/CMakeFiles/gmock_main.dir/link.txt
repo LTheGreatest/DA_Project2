@@ -1,2 +1,0 @@
-"D:\clion\CLion 2023.2.2\bin\mingw\bin\ar.exe" qc ..\..\libgmock_main.a CMakeFiles/gmock_main.dir/src/gmock_main.cc.obj
-"D:\clion\CLion 2023.2.2\bin\mingw\bin\ranlib.exe" ..\..\libgmock_main.a
