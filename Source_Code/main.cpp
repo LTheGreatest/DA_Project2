@@ -10,5 +10,13 @@ int main(){
     int n = 1;
     std::unordered_map<int, NodeInfo> map;
     readNodes(DataSetSelection::MEDIUM, map, g,n);
+    readEdges(DataSetSelection::MEDIUM,map,g,n);
+
+    for(auto a : g.getVertexSet()){
+        std::cout << "Vertex with ID of: " << a->getInfo().getId() << " has this edges :" << std::endl;
+        for (auto e : a->getAdj()){
+            std::cout << "To " << e->getDest()->getInfo().getId() << " with distance of " << e->getWeight() << std::endl;
+        }
+    }
     return 0;
 }

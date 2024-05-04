@@ -139,7 +139,7 @@ public:
     bool addBidirectionalEdge(const T &sourc, const T &dest, double w);
 
     int getNumVertex() const;
-    std::unordered_set<Vertex<T> *> getVertexSet() const;
+    std::unordered_set<Vertex<T> *, HashVertex<T>, EqualityVertex<T>> getVertexSet() const;
 
     std:: vector<T> dfs() const;
     std:: vector<T> dfs(const T & source) const;
@@ -550,7 +550,7 @@ int Graph<T>::getNumVertex() const {
  * @return  vector with the vertexes
  */
 template <class T>
-std::unordered_set<Vertex<T> *> Graph<T>::getVertexSet() const {
+std::unordered_set<Vertex<T> *, HashVertex<T>, EqualityVertex<T>> Graph<T>::getVertexSet() const {
     return vertexSet;
 }
 

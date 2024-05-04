@@ -1,5 +1,5 @@
 //
-// Created by Utilizador on 5/3/2024.
+// Created by Pedro on 5/3/2024.
 //
 
 #ifndef PROJECT2_NODEINFO_H
@@ -10,7 +10,7 @@
 class NodeInfo {
     public:
         NodeInfo(int id_, std::string label_ = "", double longitude_ = 0, double latitude_ = 0) : id(id_),label(label_),longitude(longitude_),latitude(latitude_) {}
-
+        NodeInfo() : id(0), latitude(0), longitude(0)  {};
         //getters
         int getId() const;
         std::string getLabel() const;

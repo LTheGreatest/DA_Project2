@@ -1,5 +1,5 @@
 //
-// Created by Utilizador on 5/3/2024.
+// Created by Pedro on 5/3/2024.
 //
 
 #include "DataSelection.h"
@@ -20,7 +20,7 @@ void selectDataSet(DataSetSelection dataset, std::string *filepath) {
             *filepath = "../DataSet/Toy-Graphs";
             break;
         case DataSetSelection::MEDIUM:
-            *filepath = "../DataSet/ExtraFullyConnectedGraphs";
+            *filepath = "../DataSet/Extra_Fully_Connected_Graphs";
             break;
         case DataSetSelection::BIG:
             *filepath = "../DataSet/Real-World Graphs";
@@ -81,6 +81,7 @@ int selectMediumGraph(int n, std::string *filepath){
             *filepath += "/edges_900.csv";
             return 900;
     }
+    return -1;
 }
 
 void selectBigGraph(int n, std::string *filepath) {
@@ -102,12 +103,13 @@ void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeIn
     string filepath;
     switch (dataSetSelection) {
         case DataSetSelection::SMALL :
-            //Use the appropriated function for the small dataset
+            readNodesAndEdgesSmallGraphs(idToInfo,graph,n);
             break;
         case DataSetSelection::MEDIUM :
             selectDataSet(DataSetSelection::MEDIUM, &filepath);
             numbOfNodes =  selectMediumGraph(n, &filepath);
-            filepath = "../dataset/Extra_Fully_Connected_Graphs/nodes.csv";
+            filepath = "../Dataset/Extra_Fully_Connected_Graphs/nodes.csv";
+            cout << filepath;
             break;
         case DataSetSelection::BIG:
             selectDataSet(DataSetSelection::BIG, &filepath);
@@ -126,7 +128,7 @@ void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeIn
     int id;
     double latitude, longitude;
 
-    while(getline(file,line) || numbOfNodes == 0) {
+    while(getline(file,line) && numbOfNodes > 0) {
         numbOfNodes--;
 
         //get id
@@ -153,15 +155,15 @@ void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeIn
 
 }
 
-void readEdges(DataSetSelection dataSetSelection, Graph<NodeInfo> &graph, int n){
+void readEdges(DataSetSelection dataSetSelection,std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph, int n){
     string filepath;
     switch (dataSetSelection) {
         case DataSetSelection::SMALL :
-            //Use the appropriated function for the small dataset
-            break;
+            return;
         case DataSetSelection::MEDIUM :
             selectDataSet(DataSetSelection::MEDIUM, &filepath);
             selectMediumGraph(n, &filepath);
+            cout << filepath;
             break;
         case DataSetSelection::BIG:
             selectDataSet(DataSetSelection::BIG, &filepath);
@@ -175,8 +177,101 @@ void readEdges(DataSetSelection dataSetSelection, Graph<NodeInfo> &graph, int n)
 
     string line;
 
-    getline(file,line); //header line
+    if (dataSetSelection != DataSetSelection::MEDIUM) getline(file,line); //header line
+
+    int origID, destID;
+    double distance;
+
+    while(getline(file,line)){
+
+        //get origID
+        size_t it = line.find_first_of(',');
+        origID = stoi(line.substr(0,it));
+        line = line.substr(it+1);
+
+        //get destID
+        it = line.find_first_of(',');
+        destID = stoi(line.substr(0,it));
+        line = line.substr(it+1);
+
+        //get distance
+        it = line.find_first_of(',');
+        distance = stod(line.substr(0,it));
+
+        //add Edge to the graph
+        graph.addEdge(idToInfo[origID],idToInfo[destID],distance);
+    }
+
 }
 
+void readNodesAndEdgesSmallGraphs(std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph, int n){
+    string filepath;
+
+    //Select small graph
+    selectDataSet(DataSetSelection::SMALL, &filepath);
+    selectSmallGraph(n,&filepath);
+
+    ifstream file(filepath);
+    if(!file.is_open()){
+        cerr << "Error: Unable to open the file." << '\n';
+    }
+
+    string line;
+
+    int origID, destID;
+    double distance;
+    bool hasLabels = 0;
+    string labelOrig;
+    string labelDest;
+
+    getline(file,line); //header line
+
+    if (line.size() > 24) hasLabels = 1;
+
+    while(getline(file,line)) {
+
+        //get origID
+        size_t it = line.find_first_of(',');
+        origID = stoi(line.substr(0,it));
+        line = line.substr(it+1);
+
+        //get destID
+        it = line.find_first_of(',');
+        destID = stoi(line.substr(0,it));
+        line = line.substr(it+1);
+
+        //get distance
+        it = line.find_first_of(',');
+        distance = stod(line.substr(0,it));
+
+        if (hasLabels){
+
+            line = line.substr(it+1);
+
+            //get LabelOrigin
+            it = line.find_first_of(',');
+            labelOrig = line.substr(0,it);
+            line = line.substr(it+1);
+
+            //get LabelDest
+            it = line.find_first_of(',');
+            labelDest = line.substr(0,it);
+
+        }
+
+        //create the new node info
+        NodeInfo origInfo {origID, labelOrig};
+        NodeInfo destInfo {destID, labelDest};
+
+        //insert the new node in the hashmap and into the graph
+        idToInfo.emplace(origID,origInfo);
+        idToInfo.emplace(destID,destInfo);
+        graph.addVertex(origInfo);
+        graph.addVertex(origInfo);
+
+        //add Edge to the graph
+        graph.addEdge(origInfo,destInfo,distance);
+    }
+}
 
 

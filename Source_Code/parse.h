@@ -15,7 +15,8 @@ void selectDataSet(DataSetSelection dataset, std::string *filepath);
 void selectSmallGraph(int n, std::string *filepath);
 int selectMediumGraph(int n, std::string *filepath);
 void selectBigGraph(int n, std::string *filepath);
+void readNodesAndEdgesSmallGraphs(std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph, int n);
 void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph, int n);
-void readEdges(DataSetSelection dataSetSelection, Graph<NodeInfo> &graph, int n);
+void readEdges(DataSetSelection dataSetSelection,std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph, int n);
 void readSmallGraph(DataSetSelection dataSetSelection, std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph);
 #endif //PROJECT2_PARSE_H
