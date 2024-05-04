@@ -9,9 +9,9 @@
 #include <sstream>
 using namespace std;
 /**
- * Used to select the path to the desired dataset.
+ * Used to select the path to the desired Dataset.
  * Complexity: O(1)
- * @param dataset Which dataset we want (Small/Medium/Big)
+ * @param dataset Which Dataset we want (Small/Medium/Big)
  * @param filepath Path to the file
  */
 void selectDataSet(DataSetSelection dataset, std::string *filepath) {
@@ -199,7 +199,7 @@ void readEdges(DataSetSelection dataSetSelection,std::unordered_map<int, NodeInf
         distance = stod(line.substr(0,it));
 
         //add Edge to the graph
-        graph.addEdge(idToInfo[origID],idToInfo[destID],distance);
+        graph.addBidirectionalEdge(idToInfo[origID],idToInfo[destID],distance);
     }
 
 }
@@ -270,7 +270,7 @@ void readNodesAndEdgesSmallGraphs(std::unordered_map<int, NodeInfo> &idToInfo, G
         graph.addVertex(destInfo);
 
         //add Edge to the graph
-        graph.addEdge(origInfo,destInfo,distance);
+        graph.addBidirectionalEdge(origInfo,destInfo,distance);
     }
 }
 

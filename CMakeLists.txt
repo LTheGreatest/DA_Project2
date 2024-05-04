@@ -14,6 +14,8 @@ set( CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE_TMP} )
 add_executable(Test
         Source_Code/Graph.h
         Source_Code/NodeInfo.cpp
+        Source_Code/TSP.cpp
+        Source_Code/TSP.h
 )
 
 target_link_libraries(Test gtest gtest_main)
@@ -27,6 +29,8 @@ set(SOURCE_FILES
         Source_Code/NodeInfo.cpp
         Source_Code/main.cpp
         Source_Code/parse.h
+        Source_Code/TSP.cpp
+        Source_Code/TSP.h
 
 )
 
