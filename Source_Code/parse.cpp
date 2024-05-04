@@ -17,13 +17,13 @@ using namespace std;
 void selectDataSet(DataSetSelection dataset, std::string *filepath) {
     switch (dataset) {
         case DataSetSelection::SMALL:
-            *filepath = "../DataSet/Toy-Graphs";
+            *filepath = "../Dataset/Toy-Graphs";
             break;
         case DataSetSelection::MEDIUM:
-            *filepath = "../DataSet/Extra_Fully_Connected_Graphs";
+            *filepath = "../Dataset/Extra_Fully_Connected_Graphs";
             break;
         case DataSetSelection::BIG:
-            *filepath = "../DataSet/Real-World Graphs";
+            *filepath = "../Dataset/Real-World Graphs";
             break;
     }
 }
@@ -104,7 +104,7 @@ void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeIn
     switch (dataSetSelection) {
         case DataSetSelection::SMALL :
             readNodesAndEdgesSmallGraphs(idToInfo,graph,n);
-            break;
+            return;
         case DataSetSelection::MEDIUM :
             selectDataSet(DataSetSelection::MEDIUM, &filepath);
             numbOfNodes =  selectMediumGraph(n, &filepath);
@@ -267,7 +267,7 @@ void readNodesAndEdgesSmallGraphs(std::unordered_map<int, NodeInfo> &idToInfo, G
         idToInfo.emplace(origID,origInfo);
         idToInfo.emplace(destID,destInfo);
         graph.addVertex(origInfo);
-        graph.addVertex(origInfo);
+        graph.addVertex(destInfo);
 
         //add Edge to the graph
         graph.addEdge(origInfo,destInfo,distance);

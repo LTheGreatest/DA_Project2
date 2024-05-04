@@ -9,8 +9,8 @@ int main(){
     Graph<NodeInfo> g;
     int n = 1;
     std::unordered_map<int, NodeInfo> map;
-    readNodes(DataSetSelection::MEDIUM, map, g,n);
-    readEdges(DataSetSelection::MEDIUM,map,g,n);
+    readNodes(DataSetSelection::SMALL, map, g,n);
+    readEdges(DataSetSelection::SMALL,map,g,n);
 
     for(auto a : g.getVertexSet()){
         std::cout << "Vertex with ID of: " << a->getInfo().getId() << " has this edges :" << std::endl;
