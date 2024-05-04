@@ -15,7 +15,9 @@ add_executable(Test
         Source_Code/Graph.h
         Source_Code/NodeInfo.cpp
         Source_Code/TSP.cpp
+        Source_Code/parse.cpp
         Source_Code/TSP.h
+        Source_Code/tests.cpp
 )
 
 target_link_libraries(Test gtest gtest_main)
