@@ -17,6 +17,9 @@ class TSP {
     void backtrackingSolutionDFS(Vertex<NodeInfo> *v, double currentWeight, double *minWeight, std::vector<NodeInfo> currentSol, std::vector<NodeInfo> *bestSol, int count) const;
     void backtrackingSolution() const;
 
+    //Triangular Approximation Heuristic
+    void triangularAproxSolution();
+
 
 
     //Auxiliary

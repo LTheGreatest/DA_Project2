@@ -113,6 +113,7 @@ void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeIn
             break;
         case DataSetSelection::BIG:
             selectDataSet(DataSetSelection::BIG, &filepath);
+            selectBigGraph(n, &filepath);
             filepath += "/nodes.csv";
     }
 
@@ -167,6 +168,7 @@ void readEdges(DataSetSelection dataSetSelection,std::unordered_map<int, NodeInf
             break;
         case DataSetSelection::BIG:
             selectDataSet(DataSetSelection::BIG, &filepath);
+            selectBigGraph(n, &filepath);
             filepath += "/edges.csv";
     }
 

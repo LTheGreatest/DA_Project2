@@ -33,6 +33,7 @@ set(SOURCE_FILES
         Source_Code/parse.h
         Source_Code/TSP.cpp
         Source_Code/TSP.h
+        Source_Code/MutablePriorityQueue.h
 
 )
 

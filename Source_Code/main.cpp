@@ -17,5 +17,6 @@ int main(){
     tsp.setGraph(g);
     tsp.setIdToNode(map);
     tsp.backtrackingSolution();
+    tsp.triangularAproxSolution();
     return 0;
 }

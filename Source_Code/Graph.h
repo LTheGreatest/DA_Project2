@@ -46,6 +46,7 @@ public:
         return std::hash<T>()(info);
     }
 
+    int queueIndex = 0;
 protected:
     T info;                // info node
     std::vector<Edge<T> *> adj;  // outgoing edges
@@ -59,7 +60,7 @@ protected:
 
     std::vector<Edge<T> *> incoming; // incoming edges
 
-    int queueIndex = 0; 		// required by MutablePriorityQueue and UFDS
+    // required by MutablePriorityQueue and UFDS
 
     void deleteEdge(Edge<T> *edge);
 };
