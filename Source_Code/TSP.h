@@ -29,6 +29,8 @@ class TSP {
     //getters
     std::unordered_map<int, NodeInfo> getIdToNode() const;
     Graph<NodeInfo> getGraph() const;
+
+
     private:
         std::unordered_map<int, NodeInfo> idToNode;
         Graph<NodeInfo> graph;

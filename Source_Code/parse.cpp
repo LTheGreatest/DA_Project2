@@ -109,10 +109,10 @@ void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeIn
             selectDataSet(DataSetSelection::MEDIUM, &filepath);
             numbOfNodes =  selectMediumGraph(n, &filepath);
             filepath = "../Dataset/Extra_Fully_Connected_Graphs/nodes.csv";
-            cout << filepath;
             break;
         case DataSetSelection::BIG:
             selectDataSet(DataSetSelection::BIG, &filepath);
+            selectBigGraph(n, &filepath);
             filepath += "/nodes.csv";
     }
 
@@ -163,10 +163,10 @@ void readEdges(DataSetSelection dataSetSelection,std::unordered_map<int, NodeInf
         case DataSetSelection::MEDIUM :
             selectDataSet(DataSetSelection::MEDIUM, &filepath);
             selectMediumGraph(n, &filepath);
-            cout << filepath;
             break;
         case DataSetSelection::BIG:
             selectDataSet(DataSetSelection::BIG, &filepath);
+            selectBigGraph(n, &filepath);
             filepath += "/edges.csv";
     }
 
