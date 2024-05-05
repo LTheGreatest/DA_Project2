@@ -97,6 +97,7 @@ void TSP::displayPathFound(double minWeight, const vector<NodeInfo>& solution, s
     for(const NodeInfo& info: solution){
         cout << info.getId() << '\n';
     }
+    cout << "\n";
 
 }
 
