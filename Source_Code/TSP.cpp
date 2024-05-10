@@ -8,16 +8,59 @@
 #include "MutablePriorityQueue.h"
 
 using namespace std;
+/**
+ * @file TSP.cpp
+ * @brief Implementation of class TSP.
+ */
 
+
+//Getters =================================================================================
+/** Gets the if to node info unordered map.
+ * Complexity: O(1)
+ * @return Map with the id and node information
+ */
 unordered_map<int, NodeInfo> TSP::getIdToNode() const{
     return idToNode;
 }
 
+/**
+ *  Gets the graph.
+ *  Complexity: O(1).
+ * @return Graph
+ */
 Graph<NodeInfo> TSP::getGraph() const{
     return graph;
 }
 
+//Setters ==================================================================================
+/**
+ * Sets a new graph.
+ * Complexity: O(1).
+ * @param graph_ The new graph
+ */
+void TSP::setGraph(const Graph<NodeInfo>& graph_) {
+    this->graph = graph_;
+}
 
+/**
+ * Sets the id to node map to a new one.
+ * Complexity: O(1).
+ * @param idToNode_ The new map
+ */
+void TSP::setIdToNode(const unordered_map<int, NodeInfo>& idToNode_) {
+    this->idToNode = idToNode_;
+}
+
+/**
+ * DFS for seeking the best solution for the TSP problem.
+ * Complexity: O(N!) where n is number os vertexes.
+ * @param v Starting vertex.
+ * @param currentWeight Current calculated weight
+ * @param minWeight The minimum weight calculated
+ * @param currentSol The current solution found
+ * @param bestSol The best solution found
+ * @param count Counts the number of iterations taken
+ */
 void TSP::backtrackingSolutionDFS(Vertex<NodeInfo> *v, double currentWeight, double *minWeight, vector<NodeInfo> currentSol, vector<NodeInfo> *bestSol, int count) const{
     for(auto e: v->getAdj()){
         Vertex<NodeInfo> *w = e->getDest();
@@ -60,7 +103,9 @@ void TSP::backtrackingSolutionDFS(Vertex<NodeInfo> *v, double currentWeight, dou
     v->setVisited(false);
 }
 
-
+/**
+ * Calculates the backtracking solution for the TSP problem
+ */
 void TSP::backtrackingSolution() const{
     auto clockStart= chrono::high_resolution_clock::now();
     //reset the Graph
@@ -89,6 +134,14 @@ void TSP::backtrackingSolution() const{
     displayPathFound(minWeight, bestSol, duration);
 }
 
+
+/**
+ * Displays the results obtained by the algorithms.
+ * Complexity: O(n) where n is the number of vertexes.
+ * @param minWeight The min weight found in the solution
+ * @param solution The solution found
+ * @param time The execution time of the algorithm
+ */
 void TSP::displayPathFound(double minWeight, const vector<NodeInfo>& solution, std::chrono::duration<double> time) const{
 
     cout << "Cost: " << minWeight << "\n";
@@ -101,14 +154,14 @@ void TSP::displayPathFound(double minWeight, const vector<NodeInfo>& solution, s
 
 }
 
-void TSP::setGraph(const Graph<NodeInfo>& graph_) {
-    this->graph = graph_;
-}
 
-void TSP::setIdToNode(const unordered_map<int, NodeInfo>& idToNode_) {
-    this->idToNode = idToNode_;
-}
-
+/**
+ * Gets the pre-order-walk of the prim algorithm.
+ * Complexity: O(E * log(V)) where E is the number of edges and V is the number of vertexes
+ * @param v origin vertex
+ * @param g graph
+ * @return pre-order-walk of the prim algorithm
+ */
 vector<Vertex<NodeInfo> * > getPrimMst(Vertex<NodeInfo> *v,Graph<NodeInfo> &g){
     vector<Vertex<NodeInfo> * > mst;
     if (g.getVertexSet().empty()) {
@@ -165,6 +218,16 @@ vector<Vertex<NodeInfo> * > getPrimMst(Vertex<NodeInfo> *v,Graph<NodeInfo> &g){
     // Return the set of vertices after the Prim's algorithm completes
     return mst;
 }
+
+/**
+ * Calculates the distance between two coordinates using the haversine formula.
+ * Complexity: O(log(n)) because of the pow function.
+ * @param lat1 first latitude
+ * @param lon1 first longitude
+ * @param lat2 first latitude
+ * @param lon2 first longitude
+ * @return distance between the two coordinates
+ */
 double haversine(double lat1, double lon1,double lat2, double lon2){
     // distance between latitudes
     // and longitudes
@@ -180,6 +243,12 @@ double haversine(double lat1, double lon1,double lat2, double lon2){
     return rad * c * 1000;
 }
 
+/**
+ * Finds a edge in the graph
+ * @param first source vertex
+ * @param second destination vertex
+ * @return A pointer to the edge. If it doesn't exist, return nullptr
+ */
 Edge<NodeInfo> * findEdge(Vertex<NodeInfo> * first,Vertex<NodeInfo> * second){
     for (auto e : first->getAdj()){
         if (e->getDest()->getInfo().getId() == second->getInfo().getId()) return e;
@@ -187,18 +256,9 @@ Edge<NodeInfo> * findEdge(Vertex<NodeInfo> * first,Vertex<NodeInfo> * second){
     return nullptr;
 }
 
-void doubleHaversineCalc(Graph<NodeInfo> g){
-    for (auto v1 : g.getVertexSet()){
-        for (auto v2 : g.getVertexSet()){
-            if (v1->getInfo().getId() == v2->getInfo().getId()) continue;
-            auto weight = haversine(v1->getInfo().getLatitude(),v1->getInfo().getLongitude(),v2->getInfo().getLatitude(),v2->getInfo().getLongitude());
-            if (findEdge(v1,v2) == nullptr) g.addBidirectionalEdge(v1->getInfo(),v2->getInfo(),weight);
-
-        }
-    }
-}
-
-
+/**
+ * Calculates the triangular approximation solution for the TSP problem
+ */
 void TSP::triangularAproxSolution() {
 
     auto clockStart= chrono::high_resolution_clock::now();
@@ -206,7 +266,6 @@ void TSP::triangularAproxSolution() {
     NodeInfo info = idToNode.find(0)->second; //get the starting node info
     Vertex<NodeInfo> *v = graph.findVertex(info);
 
-    doubleHaversineCalc(graph);
     vector<Vertex<NodeInfo> * > mst_pre_order = getPrimMst(v,graph);
 
     mst_pre_order.push_back(v);
@@ -224,12 +283,31 @@ void TSP::triangularAproxSolution() {
 
         Edge<NodeInfo> * edge = findEdge(first,second);
 
+        if(edge == nullptr){
+            auto weight =  haversine(first->getInfo().getLatitude(), first->getInfo().getLongitude(),second->getInfo().getLatitude(),second->getInfo().getLongitude());
+            cost += weight;
+        }
+
         if (edge != nullptr) cost += edge->getWeight();
     }
 
     res.push_back(v->getInfo());
 
+
     auto clockEnd= chrono::high_resolution_clock::now();
 
     displayPathFound(cost, res, clockEnd-clockStart);
+}
+
+//Other heuristic =====================================================================================================
+
+/**
+ * Calculates the TSP using other heuristics
+ */
+void TSP::otherHeuristic() {
+    auto clockStart= chrono::high_resolution_clock::now();
+
+
+
+    auto clockEnd= chrono::high_resolution_clock::now();
 }

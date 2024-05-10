@@ -7,6 +7,10 @@
 
 using namespace std;
 
+/** @file Menu.cpp
+ *  @brief Implementation of Menu class
+ */
+
 /** Asks for an option (integer) and the user needs to write the option on the keyboard.
  * Complexity: O(1) (worst case is O(n) were n is the time the user writes wrong options)
  * @param option Were the option value is going to be stored
@@ -40,7 +44,11 @@ int Menu::inputCheck(int &option, int min, int max) {
     return EXIT_SUCCESS;
 }
 
-
+/**
+ * Main menu of the system.
+ * Complexity: depends on the user choice of algorithm
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::mainMenu(){
     cout << "\nWELCOME TO THE TSP ALGORITHM ANALYSER SYSTEM\n\n";
     int s;
@@ -107,24 +115,46 @@ int Menu::mainMenu(){
     }
 }
 
+/**
+ * Executes the backtracking algorithm.
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::backtracking() {
     tsp.backtrackingSolution();
     return 0;
 }
 
+/**
+ * Executes the other heuristic algorithm.
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::otherHeuristic() {
+    tsp.otherHeuristic();
     return 0;
 }
 
+/**
+ * Executes the other triangular approximation algorithm.
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::triangularAproximation() {
     tsp.triangularAproxSolution();
     return 0;
 }
 
+/**
+ * Executes the  algorithm for the real world graphs.
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::realWorld() {
     return 0;
 }
 
+/**
+ * Menu used to select the dataset.
+ * Complexity: O(n)
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::chooseDataset() {
     cout << "Please choose a dataset to use in the system\n";
 
@@ -164,6 +194,11 @@ int Menu::chooseDataset() {
     return EXIT_SUCCESS;
 }
 
+/**
+ * Menu used to select the graph in the small dataset.
+ * Complexity: O(n)
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::smallDataset() {
     cout << "Choose the small dataset you want to use\n";
 
@@ -206,6 +241,11 @@ int Menu::smallDataset() {
 
 }
 
+/**
+ * Menu used to select the graph in the medium dataset.
+ * Complexity: O(n)
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::mediumDataset() {
     cout << "Choose the number of nodes to use in the medium dataset\n";
 
@@ -296,6 +336,11 @@ int Menu::mediumDataset() {
 
 }
 
+/**
+ * Menu used to select the graph in the big dataset.
+ * Complexity: O(n)
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::bigDataset() {
     cout << "Choose the Big graph (Real World) you want to use\n";
 

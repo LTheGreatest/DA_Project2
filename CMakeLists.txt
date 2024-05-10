@@ -39,4 +39,4 @@ set(SOURCE_FILES
 )
 
 # Define the executable target
-add_executable(Main ${SOURCE_FILES})
+add_executable(main ${SOURCE_FILES})

@@ -7,6 +7,13 @@
 
 #include <iostream>
 
+/**
+ * @file NodeInfo.h
+ * @brief Definition of class NodeInfo.
+ *
+ * \class NodeInfo
+ * Where are stored the information related to the vertexes .
+ */
 class NodeInfo {
     public:
         NodeInfo(int id_, std::string label_ = "", double longitude_ = 0, double latitude_ = 0) : id(id_),label(label_),longitude(longitude_),latitude(latitude_) {}

@@ -9,6 +9,12 @@
 #include <sstream>
 using namespace std;
 /**
+ * @file parse.cpp
+ * @brief Implementation of the parse functions.
+ */
+
+
+/**
  * Used to select the path to the desired Dataset.
  * Complexity: O(1)
  * @param dataset Which Dataset we want (Small/Medium/Big)
@@ -28,6 +34,12 @@ void selectDataSet(DataSetSelection dataset, std::string *filepath) {
     }
 }
 
+/**
+ * Used to select the desired graph from the small graphs dataset.
+ * Complexity: O(1)
+ * @param n option selected by the user
+ * @param filepath Path to the file
+ */
 void selectSmallGraph(int n, std::string *filepath){
     switch (n) {
         case 1:
@@ -42,6 +54,13 @@ void selectSmallGraph(int n, std::string *filepath){
     }
 }
 
+/**
+ *
+ * Used to select the desired graph from the medium graphs dataset.
+ * Complexity: O(1)
+ * @param n option selected by the user
+ * @param filepath Path to the file
+ */
 int selectMediumGraph(int n, std::string *filepath){
     switch (n) {
         case 1:
@@ -84,6 +103,12 @@ int selectMediumGraph(int n, std::string *filepath){
     return -1;
 }
 
+/**
+ * Used to select the desired graph from the big graphs dataset.
+  * Complexity: O(1)
+ * @param n option selected by the user
+ * @param filepath Path to the file
+ */
 void selectBigGraph(int n, std::string *filepath) {
     switch (n) {
         case 1:
@@ -98,6 +123,14 @@ void selectBigGraph(int n, std::string *filepath) {
     }
 }
 
+/**
+ * Reads the nodes from the selected dataset.
+ * Complexity: O(n) where n is the number of lines in the file
+ * @param dataSetSelection DataSet selected
+ * @param idToInfo Map to store the info of each vertex
+ * @param graph The graph to insert the vertexes
+ * @param n Option selected by the user
+ */
 void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph, int n){
     int numbOfNodes = 10000; //reads all the nodes
     string filepath;
@@ -155,6 +188,14 @@ void readNodes(DataSetSelection dataSetSelection, std::unordered_map<int, NodeIn
 
 }
 
+/**
+ * Reads the edges from the selected dataset
+ * Complexity: O(n) where n is the number of lines in the file
+ * @param dataSetSelection DataSet selected
+ * @param idToInfo Map to store the info of each vertex
+ * @param graph The graph to insert the vertexes
+ * @param n Option selected by the user
+ */
 void readEdges(DataSetSelection dataSetSelection,std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph, int n){
     string filepath;
     switch (dataSetSelection) {
@@ -204,6 +245,13 @@ void readEdges(DataSetSelection dataSetSelection,std::unordered_map<int, NodeInf
 
 }
 
+/**
+ * Reads the edges and nodes from the small dataset.
+ * Complexity: O(n) where n is the number of lines in the file
+ * @param idToInfo Map to store the info of each vertex
+ * @param graph The graph to insert the vertexes
+ * @param n Option selected by the user
+ */
 void readNodesAndEdgesSmallGraphs(std::unordered_map<int, NodeInfo> &idToInfo, Graph<NodeInfo> &graph, int n){
     string filepath;
 

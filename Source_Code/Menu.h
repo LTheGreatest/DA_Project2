@@ -8,6 +8,14 @@
 
 #include "TSP.h"
 
+/**
+ * @file Menu.h
+ * @brief Definition of class Menu.
+ *
+ * \class Menu
+ * Where are preformed functions related to the user interface(menus).
+ * Stores a WaterSupplySystem object.
+ */
 class Menu {
 public:
     int mainMenu();

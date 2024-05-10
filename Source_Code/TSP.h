@@ -9,7 +9,14 @@
 #include "Graph.h"
 #include <unordered_map>
 #include <chrono>
-
+/**
+ * @file TSP.h
+ * @brief Definition of class TSP.
+ *
+ * \class TSP
+ * Where are stored the graph and the map from the ids to the vertexes.
+ * Is also where the TSP algorithms are performed.
+ */
 class TSP {
 
     public:

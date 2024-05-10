@@ -30,3 +30,22 @@ TEST(Backtracking, Backtracking_small_graph_3){
     EXPECT_EQ(minWeight, 2600);
 
 }
+
+TEST(parse, parse_graph_3_big){
+    Graph<NodeInfo> g;
+    int n = 3;
+    std::unordered_map<int, NodeInfo> map;
+    readNodes(DataSetSelection::BIG, map, g,n);
+    readEdges(DataSetSelection::BIG,map,g,n);
+
+    long numbEdges = 0;
+
+    for(std::pair<int, NodeInfo> codeInfo: map){
+        Vertex<NodeInfo> *v = g.findVertex(codeInfo.second);
+        numbEdges += v->getAdj().size();
+    }
+    std::cout << "edges " << numbEdges << '\n';
+    EXPECT_EQ(map.size(), 10000);
+
+
+}
