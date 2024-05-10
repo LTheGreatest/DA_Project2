@@ -20,6 +20,9 @@ class TSP {
     //Triangular Approximation Heuristic
     void triangularAproxSolution();
 
+    //Other heuristic
+    void otherHeuristic();
+
 
 
     //Auxiliary

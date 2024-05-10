@@ -180,11 +180,18 @@ double haversine(double lat1, double lon1,double lat2, double lon2){
     return rad * c;
 }
 
+Edge<NodeInfo> * findEdge(Vertex<NodeInfo> * first,Vertex<NodeInfo> * second){
+    for (auto e : first->getAdj()){
+        if (e->getDest()->getInfo().getId() == second->getInfo().getId()) return e;
+    }
+    return nullptr;
+}
+
 void doubleHaversineCalc(Graph<NodeInfo> g){
     for (auto v1 : g.getVertexSet()){
         for (auto v2 : g.getVertexSet()){
             if (v1->getInfo().getId() == v2->getInfo().getId()) continue;
-
+            //if(findEdge(v1, v2) != nullptr) continue;
             auto weight = haversine(v1->getInfo().getLatitude(),v1->getInfo().getLongitude(),v2->getInfo().getLatitude(),v2->getInfo().getLongitude());
             g.addBidirectionalEdge(v1->getInfo(),v2->getInfo(),weight);
 
@@ -192,12 +199,7 @@ void doubleHaversineCalc(Graph<NodeInfo> g){
     }
 }
 
-Edge<NodeInfo> * findEdge(Vertex<NodeInfo> * first,Vertex<NodeInfo> * second){
-    for (auto e : first->getAdj()){
-        if (e->getDest()->getInfo().getId() == second->getInfo().getId()) return e;
-    }
-    return nullptr;
-}
+
 
 void TSP::triangularAproxSolution() {
 
@@ -231,4 +233,8 @@ void TSP::triangularAproxSolution() {
     auto clockEnd= chrono::high_resolution_clock::now();
 
     displayPathFound(cost, res, clockEnd-clockStart);
+}
+
+void TSP::otherHeuristic() {
+
 }
