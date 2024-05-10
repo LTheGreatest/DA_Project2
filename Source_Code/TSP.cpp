@@ -300,14 +300,120 @@ void TSP::triangularAproxSolution() {
 }
 
 //Other heuristic =====================================================================================================
+/**
+ * Gets the edge with the smallest cost from a given vertex.
+ * Complexity: O(E) where E is the number of outgoing edges of v.
+ * @param v Vertex we are analysing
+ * @return edge with the smallest cost
+ */
+Edge<NodeInfo>* getShortestEdge(Vertex<NodeInfo> *v){
+    double minWeight = LONG_LONG_MAX;
+    Edge<NodeInfo> * minEdge = nullptr;
+
+    for(Edge<NodeInfo> *e: v->getAdj()){
+        if((e->getWeight() < minWeight) && (!e->getDest()->isVisited())){
+            minEdge = e;
+            minWeight = e->getWeight();
+        }
+    }
+
+
+    return minEdge;
+}
 
 /**
- * Calculates the TSP using other heuristics
+ * Gets the smallest cost for a edge between given vertex and the unvisited nodes (only used if there is not possible to find a feasible outgoing edge in a not fully connected graphs)
+ * Complexity: O(V) where v is the number of unvisited edges.
+ * @param v Vertex to analyse
+ * @param g graph
+ * @param unvisited unvisited nodes
+ * @return smallest cost for a edge between given vertex and the unvisited nodes
+ */
+Edge<NodeInfo> getShortestEdgeUnvisited(Vertex<NodeInfo> *v,Graph<NodeInfo> &g, unordered_map<int, NodeInfo> unvisited){
+    int minVertexIDX = INT_MAX;
+    double minDist = LONG_LONG_MAX;
+
+    for(pair<int, NodeInfo> intToNode: unvisited){
+        NodeInfo inf1 = v->getInfo();
+        NodeInfo inf2 = intToNode.second;
+        double dist = haversine(inf1.getLatitude(), inf1.getLongitude(), inf2.getLatitude(), inf2.getLongitude());
+        if(dist < minDist){
+            minDist = dist;
+            minVertexIDX = intToNode.first;
+        }
+    }
+    NodeInfo destInf = unvisited.find(minVertexIDX)->second;
+    Vertex<NodeInfo> *dest = g.findVertex(destInf);
+
+    Edge<NodeInfo> e {v, dest, minDist};
+
+    return e;
+}
+
+/**
+ * Calculates the TSP using other heuristics.
+ * Complexity: O(V*E) where V is the number of vertexes and E is hte number of edges.
  */
 void TSP::otherHeuristic() {
     auto clockStart= chrono::high_resolution_clock::now();
 
+    //initialize the variables
+    NodeInfo info = idToNode.find(0)->second; //get the starting node info
+    Vertex<NodeInfo> *v = graph.findVertex(info);
 
+    unordered_map<int, NodeInfo> unvisited = idToNode;
+    vector<NodeInfo> res;
+    res.push_back(v->getInfo());
+    unvisited.erase(0);
+    double cost = 0;
+
+
+    //reset the graph
+    for(auto s : graph.getVertexSet()) {
+        s->setDist(ULONG_LONG_MAX); // Set distance to infinity
+        s->setPath(nullptr); // Set path to null
+        s->setVisited(false); // Mark as not visited
+    }
+
+    v->setVisited(true);
+
+    //check for the closest neighbor and inserts it into the path
+    while(res.size() < graph.getVertexSet().size()){
+        Edge<NodeInfo> *e = getShortestEdge(v);
+
+        //there is no possible path (calculate the dist for paths that are not connected and are not visited)
+        if(e == nullptr){
+           Edge<NodeInfo> e2 = getShortestEdgeUnvisited(v, graph, unvisited);
+           cost += e2.getWeight();
+           v = e2.getDest();
+        }
+        //a path was found
+        else {
+            cost += e->getWeight();
+            v = e->getDest();
+        }
+
+        res.push_back(v->getInfo());
+        v->setVisited(true);
+        unvisited.erase(v->getInfo().getId());
+    }
+
+    //connects the final node of the tour to the edge
+    NodeInfo infoFinal = res.back();
+    Vertex<NodeInfo> *finalVertex = graph.findVertex(infoFinal);
+    Vertex<NodeInfo> *firstVertex = graph.findVertex(info);
+
+    Edge<NodeInfo> *e = findEdge(finalVertex, firstVertex);
+
+    if(e == nullptr){
+        cost += haversine(infoFinal.getLatitude(), infoFinal.getLongitude(), info.getLatitude(), info.getLongitude());
+    }
+    else{
+        cost += e->getWeight();
+    }
+
+    res.push_back(info);
 
     auto clockEnd= chrono::high_resolution_clock::now();
+    displayPathFound(cost, res, clockEnd-clockStart);
 }
