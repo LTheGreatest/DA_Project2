@@ -187,18 +187,6 @@ Edge<NodeInfo> * findEdge(Vertex<NodeInfo> * first,Vertex<NodeInfo> * second){
     return nullptr;
 }
 
-void doubleHaversineCalc(Graph<NodeInfo> g){
-    for (auto v1 : g.getVertexSet()){
-        for (auto v2 : g.getVertexSet()){
-            if (v1->getInfo().getId() == v2->getInfo().getId()) continue;
-            auto weight = haversine(v1->getInfo().getLatitude(),v1->getInfo().getLongitude(),v2->getInfo().getLatitude(),v2->getInfo().getLongitude());
-            if (findEdge(v1,v2) == nullptr) g.addBidirectionalEdge(v1->getInfo(),v2->getInfo(),weight);
-
-        }
-    }
-}
-
-
 void TSP::triangularAproxSolution() {
 
     auto clockStart= chrono::high_resolution_clock::now();
@@ -206,7 +194,6 @@ void TSP::triangularAproxSolution() {
     NodeInfo info = idToNode.find(0)->second; //get the starting node info
     Vertex<NodeInfo> *v = graph.findVertex(info);
 
-    doubleHaversineCalc(graph);
     vector<Vertex<NodeInfo> * > mst_pre_order = getPrimMst(v,graph);
 
     mst_pre_order.push_back(v);
@@ -225,6 +212,7 @@ void TSP::triangularAproxSolution() {
         Edge<NodeInfo> * edge = findEdge(first,second);
 
         if (edge != nullptr) cost += edge->getWeight();
+        else cost += haversine(first->getInfo().getLatitude(),first->getInfo().getLongitude(),second->getInfo().getLatitude(),second->getInfo().getLongitude());
     }
 
     res.push_back(v->getInfo());
