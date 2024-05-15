@@ -30,6 +30,9 @@ class TSP {
     //Other heuristic
     void otherHeuristic();
 
+    //TSP real-world
+    void tspRealWorld();
+
 
 
     //Auxiliary

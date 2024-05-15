@@ -104,7 +104,8 @@ void TSP::backtrackingSolutionDFS(Vertex<NodeInfo> *v, double currentWeight, dou
 }
 
 /**
- * Calculates the backtracking solution for the TSP problem
+ * Calculates the backtracking solution for the TSP problem.
+ * Complexity: O(N!) where n is number os vertexes.
  */
 void TSP::backtrackingSolution() const{
     auto clockStart= chrono::high_resolution_clock::now();
@@ -244,7 +245,8 @@ double haversine(double lat1, double lon1,double lat2, double lon2){
 }
 
 /**
- * Finds a edge in the graph
+ * Finds a edge in the graph.
+ * Complexity: O(E) where E is the number of edges
  * @param first source vertex
  * @param second destination vertex
  * @return A pointer to the edge. If it doesn't exist, return nullptr
@@ -352,7 +354,7 @@ Edge<NodeInfo> getShortestEdgeUnvisited(Vertex<NodeInfo> *v,Graph<NodeInfo> &g, 
 
 /**
  * Calculates the TSP using other heuristics.
- * Complexity: O(V*E) where V is the number of vertexes and E is hte number of edges.
+ * Complexity: O(V*E) where V is the number of vertexes and E is the number of edges.
  */
 void TSP::otherHeuristic() {
     auto clockStart= chrono::high_resolution_clock::now();
@@ -417,3 +419,4 @@ void TSP::otherHeuristic() {
     auto clockEnd= chrono::high_resolution_clock::now();
     displayPathFound(cost, res, clockEnd-clockStart);
 }
+
