@@ -149,7 +149,7 @@ int Menu::triangularAproximation() {
 int Menu::realWorld() {
     cout<<"Please input the id of the vertex where you want to start\n";
     int id;
-    int s = inputCheck(id,0,(int) tsp.getGraph().getVertexSet().size());
+    int s = inputCheck(id,0,(int) tsp.getGraph().getVertexSet().size() - 1);
     if(s !=0){
         return 1;
     }
