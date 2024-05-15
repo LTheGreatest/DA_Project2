@@ -120,7 +120,7 @@ int Menu::mainMenu(){
  * @return 1 if an error occurred. 0 otherwise
  */
 int Menu::backtracking() {
-    tsp.backtrackingSolution();
+    tsp.backtrackingSolution(0);
     return 0;
 }
 
@@ -149,7 +149,7 @@ int Menu::triangularAproximation() {
 int Menu::realWorld() {
     cout<<"Please input the id of the vertex where you want to start\n";
     int id;
-    int s = inputCheck(id,-1,INT_MAX);
+    int s = inputCheck(id,0,(int) tsp.getGraph().getVertexSet().size());
     if(s !=0){
         return 1;
     }

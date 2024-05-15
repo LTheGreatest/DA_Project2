@@ -61,7 +61,7 @@ void TSP::setIdToNode(const unordered_map<int, NodeInfo>& idToNode_) {
  * @param bestSol The best solution found
  * @param count Counts the number of iterations taken
  */
-void TSP::backtrackingSolutionDFS(Vertex<NodeInfo> *v, double currentWeight, double *minWeight, vector<NodeInfo> currentSol, vector<NodeInfo> *bestSol, int count) const{
+void TSP::backtrackingSolutionDFS(Vertex<NodeInfo> *v, double currentWeight, double *minWeight, vector<NodeInfo> currentSol, vector<NodeInfo> *bestSol, int count, int finalID) const{
     for(auto e: v->getAdj()){
         Vertex<NodeInfo> *w = e->getDest();
 
@@ -71,7 +71,7 @@ void TSP::backtrackingSolutionDFS(Vertex<NodeInfo> *v, double currentWeight, dou
             continue;
         }
 
-        if((size_t) count == graph.getVertexSet().size() && w->getInfo().getId() == 0){
+        if((size_t) count == graph.getVertexSet().size() && w->getInfo().getId() == finalID){
             //found a solution
             currentWeight += e->getWeight();
             currentSol.push_back(w->getInfo());
@@ -89,7 +89,7 @@ void TSP::backtrackingSolutionDFS(Vertex<NodeInfo> *v, double currentWeight, dou
             w->setVisited(true);
             currentSol.push_back(w->getInfo());
             currentWeight += e->getWeight();
-            backtrackingSolutionDFS(w,currentWeight, minWeight, currentSol, bestSol, count + 1);
+            backtrackingSolutionDFS(w,currentWeight, minWeight, currentSol, bestSol, count + 1, finalID);
 
             //eliminates the node from the solution for searching other solutions
             currentWeight -= e->getWeight();
@@ -107,7 +107,7 @@ void TSP::backtrackingSolutionDFS(Vertex<NodeInfo> *v, double currentWeight, dou
  * Calculates the backtracking solution for the TSP problem.
  * Complexity: O(N!) where n is number os vertexes.
  */
-void TSP::backtrackingSolution() const{
+void TSP::backtrackingSolution(int id) const{
     auto clockStart= chrono::high_resolution_clock::now();
     //reset the Graph
     for(Vertex<NodeInfo> *v : graph.getVertexSet()){
@@ -119,14 +119,14 @@ void TSP::backtrackingSolution() const{
     //create auxiliary data
     double currentWeight = 0;
     double minWeight = ULONG_LONG_MAX;
-    NodeInfo info = idToNode.find(0)->second; //get the starting node info
+    NodeInfo info = idToNode.find(id)->second; //get the starting node info
     Vertex<NodeInfo> *start = graph.findVertex(info); //find the starting node in the graph
     vector<NodeInfo> currentSol {start->getInfo()};
     vector<NodeInfo> bestSol;
 
 
     //executes the backtracking search
-    backtrackingSolutionDFS(start, currentWeight, &minWeight, currentSol, &bestSol, 1);
+    backtrackingSolutionDFS(start, currentWeight, &minWeight, currentSol, &bestSol, 1, id);
 
     auto clockEnd= chrono::high_resolution_clock::now();
 
@@ -513,6 +513,12 @@ Edge<NodeInfo>* getShortestEdgeRealWorld(Vertex<NodeInfo> *v){
  * @param id Id of the root vertex
  */
 void TSP::tspRealWord(int id) {
+
+    if(graph.getVertexSet().size() < 30){
+        //smalls graphs can use the backtracking solution instead
+        backtrackingSolution(id);
+        return;
+    }
     auto clockStart= chrono::high_resolution_clock::now();
 
     auto infoItr = idToNode.find(id);
@@ -559,6 +565,11 @@ void TSP::tspRealWord(int id) {
             }
             v->setVisited(false);
             res.erase(res.end() - 1);
+
+            if(res.empty()){
+                break;
+            }
+
             v = graph.findVertex(res.back());
 
             if(prevEdge != nullptr){
