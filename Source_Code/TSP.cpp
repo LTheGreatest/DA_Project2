@@ -155,6 +155,20 @@ void TSP::displayPathFound(double minWeight, const vector<NodeInfo>& solution, s
 
 }
 
+void TSP::displayNoSolution(int error) {
+    switch (error) {
+        case 1:
+            cout << "That vertex does not exist" << "\n";
+            break;
+        case 2:
+            cout << "Solution starting with that vertex is impossible" <<"\n";
+            break;
+        default:
+            cout<<"error"<<"\n";
+            break;
+    }
+}
+
 
 /**
  * Gets the pre-order-walk of the prim algorithm.
@@ -259,7 +273,8 @@ Edge<NodeInfo> * findEdge(Vertex<NodeInfo> * first,Vertex<NodeInfo> * second){
 }
 
 /**
- * Calculates the triangular approximation solution for the TSP problem
+ * Calculates the triangular approximation solution for the TSP problem.
+ * Complexity: O(v * E) where V is the number of vertexes and E is the number of edges
  */
 void TSP::triangularAproxSolution() {
 
@@ -418,5 +433,170 @@ void TSP::otherHeuristic() {
 
     auto clockEnd= chrono::high_resolution_clock::now();
     displayPathFound(cost, res, clockEnd-clockStart);
+}
+
+void TSP::backtrackingForRealWorld(Vertex<NodeInfo> *v, double currentWeight, double *minWeight,
+                                   std::vector<NodeInfo> currentSol, std::vector<NodeInfo> *bestSol, int count,
+                                   int tries,int currentAttemp ,int targetId) {
+    
+    for(auto e: v->getAdj()){
+        Vertex<NodeInfo> *w = e->getDest();
+
+
+        if(currentWeight + e->getWeight() >= *minWeight){
+            //this path isn't the solution
+            continue;
+        }
+
+        if((size_t) count == graph.getVertexSet().size() && w->getInfo().getId() == targetId){
+            //found a solution
+            currentWeight += e->getWeight();
+            currentSol.push_back(w->getInfo());
+
+            if(currentWeight + e->getWeight() < *minWeight){
+                //found a better solution
+
+                *minWeight = currentWeight;
+                *bestSol = currentSol;
+            }
+        }
+
+
+        //if the node isn't visited continues the search with this node
+        if(!w->isVisited() && w->getInfo().getId() != targetId){
+            w->setVisited(true);
+            currentSol.push_back(w->getInfo());
+            currentWeight += e->getWeight();
+            backtrackingForRealWorld(w,currentWeight,minWeight,currentSol,bestSol,count+1,tries,currentAttemp+1,targetId);
+
+            //eliminates the node from the solution for searching other solutions
+            currentWeight -= e->getWeight();
+            currentSol.erase(currentSol.end()--);
+        }
+
+        if(currentAttemp == tries){
+
+            continue;
+        }
+
+
+
+    }
+
+    v->setVisited(false);
+}
+
+Edge<NodeInfo>* getShortestEdgeRealWorld(Vertex<NodeInfo> *v){
+    double minWeight = LONG_LONG_MAX;
+    Edge<NodeInfo> * minEdge = nullptr;
+
+    for(Edge<NodeInfo> *e: v->getAdj()){
+        if((e->getWeight() < minWeight) && (!e->getDest()->isVisited()) && (!e->isSelected())){
+            minEdge = e;
+            minWeight = e->getWeight();
+        }
+    }
+
+
+    return minEdge;
+}
+
+/**
+ * Solves the TSP problem for incomplete graphs.
+ * Complexity: O(V*E)
+ * @param id Id of the root vertex
+ */
+void TSP::tspRealWord(int id) {
+    auto clockStart= chrono::high_resolution_clock::now();
+
+    auto infoItr = idToNode.find(id);
+
+    if(infoItr == idToNode.end()){
+        displayNoSolution(1);
+        return;
+    }
+    //initialize variables
+    NodeInfo info = infoItr->second;
+
+    Vertex<NodeInfo> *v = graph.findVertex(info);
+    vector<NodeInfo> res;
+    res.push_back(v->getInfo());
+
+    double cost = 0;
+
+    for(auto s : graph.getVertexSet()){
+        s->setVisited(false);
+        s->setDist(ULONG_LONG_MAX); // Set distance to infinity
+        s->setPath(nullptr);
+        for(auto e: s->getAdj()){
+            e->setSelected(false);
+        }
+
+    }
+
+    v->setVisited(true);
+
+    //initializes the auxiliary variables to limit the complexity of the algorithm
+    int maxTriesGoingBack = 5000;
+    Edge<NodeInfo> *prevEdge;
+
+    //main loop
+    while(res.size() < graph.getVertexSet().size()){
+        Edge<NodeInfo> *e = getShortestEdgeRealWorld(v);
+
+        if(e == nullptr){
+            //tries to find cycle or breaks
+            maxTriesGoingBack--;
+            if(maxTriesGoingBack == 0){
+                //no solution found
+                break;
+            }
+            v->setVisited(false);
+            res.erase(res.end() - 1);
+            v = graph.findVertex(res.back());
+
+            if(prevEdge != nullptr){
+                prevEdge->setSelected(true);
+            }
+
+        }
+        else if(!e->isSelected()){
+            //if we haven't tried this edge we continue
+            cost += e->getWeight();
+            v = e->getDest();
+            v->setVisited(true);
+            res.push_back(v->getInfo());
+            prevEdge = e;
+        }
+        else{
+            continue;
+        }
+
+    }
+
+    if(res.size() != graph.getVertexSet().size()){
+        displayNoSolution(2);
+        return;
+    }
+
+    NodeInfo infoFinal = res.back();
+    Vertex<NodeInfo> *finalVertex = graph.findVertex(infoFinal);
+    Vertex<NodeInfo> *firstVertex = graph.findVertex(info);
+
+    Edge<NodeInfo> *e = findEdge(firstVertex,finalVertex);
+
+    if(e == nullptr ){
+        //no greedy solution
+        displayNoSolution(2);
+    }
+    else{
+        res.push_back(info);
+        cost += e->getWeight();
+        auto clockEnd= chrono::high_resolution_clock::now();
+        displayPathFound(cost, res, clockEnd-clockStart);
+    }
+
+
+
 }
 

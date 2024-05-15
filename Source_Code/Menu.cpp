@@ -147,6 +147,13 @@ int Menu::triangularAproximation() {
  * @return 1 if an error occurred. 0 otherwise
  */
 int Menu::realWorld() {
+    cout<<"Please input the id of the vertex where you want to start\n";
+    int id;
+    int s = inputCheck(id,-1,INT_MAX);
+    if(s !=0){
+        return 1;
+    }
+    tsp.tspRealWord(id);
     return 0;
 }
 
