@@ -69,12 +69,13 @@ int Menu::mainMenu(){
         cout << "2.Triangular Approximation Heuristic\n";
         cout << "3.Other Heuristic\n";
         cout << "4.TSP in the Real World\n";
-        cout << "5.Change Dataset\n";
-        cout << "6.EXIT\n\n";
+        cout << "5.TSP in the Real World other attempt at a solution\n";
+        cout << "6.Change Dataset\n";
+        cout << "7.EXIT\n\n";
 
         int option;
 
-        s = inputCheck(option, 1, 6);
+        s = inputCheck(option, 1, 7);
         if (s != 0) {
             cout << "Error found\n";
             return EXIT_FAILURE;
@@ -96,9 +97,12 @@ int Menu::mainMenu(){
 
                 break;
             case 5:
-                isSystemReset = true;
+                s = realWorld2();
                 break;
             case 6:
+                isSystemReset = true;
+                break;
+            case 7:
                 //exits the system
                 cout << "Thank you for using our system. GOODBYE\n";
                 return EXIT_SUCCESS;
@@ -154,6 +158,17 @@ int Menu::realWorld() {
         return 1;
     }
     tsp.tspRealWord(id);
+    return 0;
+}
+
+int Menu::realWorld2() {
+    cout<<"Please input the id of the vertex where you want to start\n";
+    int id;
+    int s = inputCheck(id,0,(int) tsp.getGraph().getVertexSet().size() - 1);
+    if(s !=0){
+        return 1;
+    }
+    tsp.tspRealWord2(id);
     return 0;
 }
 

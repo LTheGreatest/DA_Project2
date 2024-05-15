@@ -23,6 +23,7 @@ public:
     int triangularAproximation();
     int otherHeuristic();
     int realWorld();
+    int realWorld2();
 
 
     //choose the dataset

@@ -31,8 +31,9 @@ class TSP {
     void otherHeuristic();
 
     // tsp for real world graphs
-    void backtrackingForRealWorld(Vertex<NodeInfo> *v, double currentWeight, double *minWeight, std::vector<NodeInfo> currentSol, std::vector<NodeInfo> *bestSol, int count, int tries,int currentAttemp ,int targetId);
+    void backtrackingForRealWorld(Vertex<NodeInfo> *v, double currentWeight, double *minWeight, std::vector<NodeInfo> currentSol, std::vector<NodeInfo> *bestSol, int count, int tries,int &currentAttempt ,int targetId);
     void tspRealWord(int id);
+    void tspRealWord2(int id);
 
 
 
