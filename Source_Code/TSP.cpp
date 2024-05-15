@@ -486,6 +486,12 @@ void TSP::backtrackingForRealWorld(Vertex<NodeInfo> *v, double currentWeight, do
     v->setVisited(false);
 }
 
+/**
+ * Gets the shortest edge adapted for the real world graphs problem.
+ * Complexity: O(E) where E is the number of outgoing edges of v.
+ * @param v Vertex we are analysing
+ * @return edge with the smallest cost
+ */
 Edge<NodeInfo>* getShortestEdgeRealWorld(Vertex<NodeInfo> *v){
     double minWeight = LONG_LONG_MAX;
     Edge<NodeInfo> * minEdge = nullptr;
