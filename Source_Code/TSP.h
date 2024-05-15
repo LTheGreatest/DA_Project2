@@ -30,10 +30,15 @@ class TSP {
     //Other heuristic
     void otherHeuristic();
 
+    // tsp for real world graphs
+    void backtrackingForRealWorld(Vertex<NodeInfo> *v, double currentWeight, double *minWeight, std::vector<NodeInfo> currentSol, std::vector<NodeInfo> *bestSol, int count, int tries,int currentAttemp ,int targetId);
+    void tspRealWord(int id);
+
 
 
     //Auxiliary
     void displayPathFound(double minWeight, const std::vector<NodeInfo>& solution, std::chrono::duration<double> time) const;
+    void displayNoSolution(int error);
 
     //setters
     void setGraph(const Graph<NodeInfo>& graph);

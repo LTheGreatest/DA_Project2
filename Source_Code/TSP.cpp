@@ -154,6 +154,20 @@ void TSP::displayPathFound(double minWeight, const vector<NodeInfo>& solution, s
 
 }
 
+void TSP::displayNoSolution(int error) {
+    switch (error) {
+        case 1:
+            cout << "That vertex does not exist" << "\n";
+            break;
+        case 2:
+            cout << "Solution starting with that vertex is impossible" <<"\n";
+            break;
+        default:
+            cout<<"error"<<"\n";
+            break;
+    }
+}
+
 
 /**
  * Gets the pre-order-walk of the prim algorithm.
@@ -416,4 +430,128 @@ void TSP::otherHeuristic() {
 
     auto clockEnd= chrono::high_resolution_clock::now();
     displayPathFound(cost, res, clockEnd-clockStart);
+}
+
+void TSP::backtrackingForRealWorld(Vertex<NodeInfo> *v, double currentWeight, double *minWeight,
+                                   std::vector<NodeInfo> currentSol, std::vector<NodeInfo> *bestSol, int count,
+                                   int tries,int currentAttemp ,int targetId) {
+    
+    for(auto e: v->getAdj()){
+        Vertex<NodeInfo> *w = e->getDest();
+
+
+        if(currentWeight + e->getWeight() >= *minWeight){
+            //this path isn't the solution
+            continue;
+        }
+
+        if((size_t) count == graph.getVertexSet().size() && w->getInfo().getId() == targetId){
+            //found a solution
+            //currentWeight += e->getWeight();
+            //currentSol.push_back(w->getInfo());
+
+            if(currentWeight + e->getWeight() < *minWeight){
+                //found a better solution
+
+                *minWeight = currentWeight;
+                *bestSol = currentSol;
+            }
+        }
+
+
+        //if the node isn't visited continues the search with this node
+        if(!w->isVisited() && w->getInfo().getId() != targetId){
+            w->setVisited(true);
+            currentSol.push_back(w->getInfo());
+            currentWeight += e->getWeight();
+            backtrackingForRealWorld(w,currentWeight,minWeight,currentSol,bestSol,count+1,tries,currentAttemp+1,targetId);
+
+            //eliminates the node from the solution for searching other solutions
+            currentWeight -= e->getWeight();
+            currentSol.erase(currentSol.end()--);
+        }
+
+        if(currentAttemp == tries){
+
+            continue;
+        }
+
+
+
+    }
+
+    v->setVisited(false);
+}
+
+void TSP::tspRealWord(int id) {
+    auto clockStart= chrono::high_resolution_clock::now();
+
+    auto infoItr = idToNode.find(id);
+
+    if(infoItr == idToNode.end()){
+        displayNoSolution(1);
+        return;
+    }
+    //initialize variables
+    NodeInfo info = infoItr->second;
+
+    Vertex<NodeInfo> *v = graph.findVertex(info);
+    vector<NodeInfo> res;
+    res.push_back(v->getInfo());
+
+    double minWeight = LONG_LONG_MAX;
+    vector<NodeInfo> bestSol;
+    double cost = 0;
+
+    for(auto s : graph.getVertexSet()){
+        s->setVisited(false);
+        s->setDist(ULONG_LONG_MAX); // Set distance to infinity
+        s->setPath(nullptr);
+
+    }
+
+    v->setVisited(true);
+
+    //main loop
+    while(res.size() < graph.getVertexSet().size()){
+        Edge<NodeInfo> *e = getShortestEdge(v);
+
+        if(e == nullptr){
+            //tries to find cycle or breaks
+            v = graph.findVertex(res.back());
+            backtrackingForRealWorld(v,cost,&minWeight,res,&bestSol,res.size(),10,0,id);
+            break;
+        }
+        else{
+            cost += e->getWeight();
+            v = e->getDest();
+            v->setVisited(true);
+        }
+        res.push_back(v->getInfo());
+    }
+
+
+    if(!bestSol.empty()){
+        res=bestSol;
+        cost=minWeight;
+    }
+    NodeInfo infoFinal = res.back();
+    Vertex<NodeInfo> *finalVertex = graph.findVertex(infoFinal);
+    Vertex<NodeInfo> *firstVertex = graph.findVertex(info);
+
+    Edge<NodeInfo> *e = findEdge(firstVertex,finalVertex);
+
+    if(e == nullptr ){
+        //no greedy solution
+        displayNoSolution(2);
+    }
+    else{
+        res.push_back(info);
+        cost += e->getWeight();
+        auto clockEnd= chrono::high_resolution_clock::now();
+        displayPathFound(cost, res, clockEnd-clockStart);
+    }
+
+
+
 }
