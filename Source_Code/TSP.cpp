@@ -514,7 +514,7 @@ void TSP::backtrackingForRealWorld(Vertex<NodeInfo> *v, double currentWeight, do
 
 /**
  * Solves the TSP problem for incomplete graphs (first solution with backtracking).
- * Complexity: O(V*E*V!)
+ * Complexity: O(E*V!)
  * @param id Id of the root vertex
  */
 void TSP::tspRealWord(int id) {
