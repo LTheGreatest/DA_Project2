@@ -14,7 +14,7 @@ using namespace std;
  */
 
 
-//Getters =================================================================================
+// ========================================================== Getters =================================================================================
 /** Gets the if to node info unordered map.
  * Complexity: O(1)
  * @return Map with the id and node information
@@ -32,7 +32,7 @@ Graph<NodeInfo> TSP::getGraph() const{
     return graph;
 }
 
-//Setters ==================================================================================
+// ========================================================= Setters ==================================================================================
 /**
  * Sets a new graph.
  * Complexity: O(1).
@@ -51,6 +51,45 @@ void TSP::setIdToNode(const unordered_map<int, NodeInfo>& idToNode_) {
     this->idToNode = idToNode_;
 }
 
+// ===================================================== DISPLAY FUNCTIONS ======================================================================
+/**
+ * Displays the results obtained by the algorithms.
+ * Complexity: O(n) where n is the number of vertexes.
+ * @param minWeight The min weight found in the solution
+ * @param solution The solution found
+ * @param time The execution time of the algorithm
+ */
+void TSP::displayPathFound(double minWeight, const vector<NodeInfo>& solution, std::chrono::duration<double> time) const{
+
+    cout << "Cost: " << minWeight << "\n";
+    cout << "Time: " << time.count() << '\n';
+
+    for(const NodeInfo& info: solution){
+        cout << info.getId() << '\n';
+    }
+    cout << "\n";
+
+}
+
+/**
+ * Displays a error message to the user
+ * @param error error number
+ */
+void TSP::displayNoSolution(int error) {
+    switch (error) {
+        case 1:
+            cout << "That vertex does not exist" << "\n";
+            break;
+        case 2:
+            cout << "Solution starting with that vertex is impossible" <<"\n";
+            break;
+        default:
+            cout<<"error"<<"\n";
+            break;
+    }
+}
+
+// ================================================================== BACKTRACKING SOLUTION ==========================================================================
 /**
  * DFS for seeking the best solution for the TSP problem.
  * Complexity: O(N!) where n is number os vertexes.
@@ -136,39 +175,9 @@ void TSP::backtrackingSolution(int id) const{
 }
 
 
-/**
- * Displays the results obtained by the algorithms.
- * Complexity: O(n) where n is the number of vertexes.
- * @param minWeight The min weight found in the solution
- * @param solution The solution found
- * @param time The execution time of the algorithm
- */
-void TSP::displayPathFound(double minWeight, const vector<NodeInfo>& solution, std::chrono::duration<double> time) const{
 
-    cout << "Cost: " << minWeight << "\n";
-    cout << "Time: " << time.count() << '\n';
 
-    for(const NodeInfo& info: solution){
-        cout << info.getId() << '\n';
-    }
-    cout << "\n";
-
-}
-
-void TSP::displayNoSolution(int error) {
-    switch (error) {
-        case 1:
-            cout << "That vertex does not exist" << "\n";
-            break;
-        case 2:
-            cout << "Solution starting with that vertex is impossible" <<"\n";
-            break;
-        default:
-            cout<<"error"<<"\n";
-            break;
-    }
-}
-
+// ========================================================= TRIANGULAR APPROXIMATION =============================================================================
 
 /**
  * Gets the pre-order-walk of the prim algorithm.
@@ -316,7 +325,7 @@ void TSP::triangularAproxSolution() {
     displayPathFound(cost, res, clockEnd-clockStart);
 }
 
-//Other heuristic =====================================================================================================
+//========================================================== OTHER HEURISTIC =====================================================================================================
 /**
  * Gets the edge with the smallest cost from a given vertex.
  * Complexity: O(E) where E is the number of outgoing edges of v.
@@ -435,9 +444,21 @@ void TSP::otherHeuristic() {
     displayPathFound(cost, res, clockEnd-clockStart);
 }
 
+// ============================================ TSP REAL WORLD ================================================================================
 
-
-
+/**
+ * DFS for seeking the best solution for the TSP problem adapted for thr real World graphs.
+ * Complexity: O(N!) where n is number os vertexes.
+ * @param v current vertex
+ * @param currentWeight Current path weight
+ * @param minWeight minimum weight found
+ * @param currentSol Current path solution
+ * @param bestSol Best solution found
+ * @param count Counts the number of vertexes visited
+ * @param tries Counts the number of tries for each vertex
+ * @param currentAttempt Current trie number
+ * @param targetId The id of the vertex where we want to finnish the path.
+ */
 void TSP::backtrackingForRealWorld(Vertex<NodeInfo> *v, double currentWeight, double *minWeight,
                                    std::vector<NodeInfo> currentSol, std::vector<NodeInfo> *bestSol, int count,
                                    int tries,int &currentAttempt ,int targetId) {
@@ -491,27 +512,30 @@ void TSP::backtrackingForRealWorld(Vertex<NodeInfo> *v, double currentWeight, do
     v->setVisited(false);
 }
 
+/**
+ * Solves the TSP problem for incomplete graphs (first solution with backtracking).
+ * Complexity: O(V*E*V!)
+ * @param id Id of the root vertex
+ */
 void TSP::tspRealWord(int id) {
     auto clockStart= chrono::high_resolution_clock::now();
 
+    //initialize variables
     auto infoItr = idToNode.find(id);
-
     if(infoItr == idToNode.end()){
         displayNoSolution(1);
         return;
     }
-    //initialize variables
     NodeInfo info = infoItr->second;
-
     Vertex<NodeInfo> *v = graph.findVertex(info);
     vector<NodeInfo> res;
     res.push_back(v->getInfo());
-
     double minWeight = LONG_LONG_MAX;
     int currentAttempt = 0;
     vector<NodeInfo> bestSol;
     double cost = 0;
 
+    //resets the graph auxiliary values
     for(auto s : graph.getVertexSet()){
         s->setVisited(false);
         s->setDist(ULONG_LONG_MAX); // Set distance to infinity
@@ -539,11 +563,19 @@ void TSP::tspRealWord(int id) {
         res.push_back(v->getInfo());
     }
 
-
+    //if we have found a solution in the backtracking we update the current solution
     if(!bestSol.empty()){
         res=bestSol;
         cost=minWeight;
     }
+
+    //checks if the current solution is valid
+    if(res.size() != graph.getVertexSet().size()){
+        displayNoSolution(2);
+        return;
+    }
+
+    //Checks if there is a path from the last vertex to the first one
     NodeInfo infoFinal = res.back();
     Vertex<NodeInfo> *finalVertex = graph.findVertex(infoFinal);
     Vertex<NodeInfo> *firstVertex = graph.findVertex(info);
@@ -551,7 +583,6 @@ void TSP::tspRealWord(int id) {
     Edge<NodeInfo> *e = findEdge(firstVertex,finalVertex);
 
     if(e == nullptr ){
-        //no greedy solution
         displayNoSolution(2);
     }
     else{
@@ -587,7 +618,7 @@ Edge<NodeInfo>* getShortestEdgeRealWorld(Vertex<NodeInfo> *v){
 }
 
 /**
- * Solves the TSP problem for incomplete graphs.
+ * Solves the TSP problem for incomplete graphs (second solution).
  * Complexity: O(V*E)
  * @param id Id of the root vertex
  */
@@ -598,23 +629,23 @@ void TSP::tspRealWord2(int id) {
         backtrackingSolution(id);
         return;
     }
+
     auto clockStart= chrono::high_resolution_clock::now();
 
     auto infoItr = idToNode.find(id);
 
+    //initialize variables
     if(infoItr == idToNode.end()){
         displayNoSolution(1);
         return;
     }
-    //initialize variables
     NodeInfo info = infoItr->second;
-
     Vertex<NodeInfo> *v = graph.findVertex(info);
     vector<NodeInfo> res;
     res.push_back(v->getInfo());
-
     double cost = 0;
 
+    //resets the graph auxiliary values
     for(auto s : graph.getVertexSet()){
         s->setVisited(false);
         s->setDist(ULONG_LONG_MAX); // Set distance to infinity
@@ -670,11 +701,13 @@ void TSP::tspRealWord2(int id) {
 
     }
 
+    //checks if the current solution is valid
     if(res.size() != graph.getVertexSet().size()){
         displayNoSolution(2);
         return;
     }
 
+    //Checks if there is a path from the last vertex to the first one
     NodeInfo infoFinal = res.back();
     Vertex<NodeInfo> *finalVertex = graph.findVertex(infoFinal);
     Vertex<NodeInfo> *firstVertex = graph.findVertex(info);
@@ -682,7 +715,6 @@ void TSP::tspRealWord2(int id) {
     Edge<NodeInfo> *e = findEdge(firstVertex,finalVertex);
 
     if(e == nullptr ){
-        //no greedy solution
         displayNoSolution(2);
     }
     else{

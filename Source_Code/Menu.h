@@ -18,6 +18,7 @@
  */
 class Menu {
 public:
+    //menus
     int mainMenu();
     int backtracking();
     int triangularAproximation();

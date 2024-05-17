@@ -161,6 +161,10 @@ int Menu::realWorld() {
     return 0;
 }
 
+/**
+ * Executes the  algorithm for the real world graphs with a different solution.
+ * @return 1 if an error occurred. 0 otherwise
+ */
 int Menu::realWorld2() {
     cout<<"Please input the id of the vertex where you want to start\n";
     int id;

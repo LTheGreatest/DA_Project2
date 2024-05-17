@@ -35,8 +35,6 @@ class TSP {
     void tspRealWord(int id);
     void tspRealWord2(int id);
 
-
-
     //Auxiliary
     void displayPathFound(double minWeight, const std::vector<NodeInfo>& solution, std::chrono::duration<double> time) const;
     void displayNoSolution(int error);
